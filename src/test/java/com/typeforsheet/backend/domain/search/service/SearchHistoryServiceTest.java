@@ -76,4 +76,38 @@ class SearchHistoryServiceTest {
 
     verify(searchHistoryRepository, never()).save(any(SearchHistory.class));
   }
+
+  @Test
+  void rejectsControlOnlyKeyword() {
+
+    BusinessException exception =
+        assertThrows(BusinessException.class, () -> service.saveHistory(1L, "\u0000\u0007"));
+
+    assertEquals(ErrorCode.INVALID_REQUEST, exception.getErrorCode());
+
+    verifyNoInteractions(searchHistoryRepository, userRepository);
+  }
+
+  @Test
+  void allowsKeywordContainingTextAndControlCharacter() {
+
+    User user = new User("테스터");
+
+    when(userRepository.findByIdForUpdate(1L)).thenReturn(Optional.of(user));
+
+    when(searchHistoryRepository.findByUser_IdAndKeyword(1L, "\u0007Love"))
+        .thenReturn(Optional.empty());
+
+    when(searchHistoryRepository.save(any(SearchHistory.class)))
+        .thenAnswer(invocation -> invocation.getArgument(0));
+
+    when(searchHistoryRepository.findByUser_IdOrderBySearchedAtDescIdDesc(1L))
+        .thenReturn(List.of());
+
+    SearchHistoryResponse response = service.saveHistory(1L, "\u0007Love");
+
+    assertEquals("\u0007Love", response.keyword());
+
+    verify(searchHistoryRepository).findByUser_IdAndKeyword(1L, "\u0007Love");
+  }
 }

@@ -94,7 +94,9 @@ public class SearchHistoryService {
 
     String normalized = keyword.strip();
 
-    if (normalized.isEmpty() || normalized.length() > MAX_KEYWORD_LENGTH) {
+    if (normalized.isEmpty()
+        || normalized.length() > MAX_KEYWORD_LENGTH
+        || normalized.codePoints().allMatch(Character::isISOControl)) {
       throw new BusinessException(ErrorCode.INVALID_REQUEST);
     }
 
