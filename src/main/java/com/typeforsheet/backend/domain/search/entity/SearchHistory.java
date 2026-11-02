@@ -33,7 +33,8 @@ public class SearchHistory {
     this.searchedAt = LocalDateTime.now();
   }
 
-  public void refreshSearchedAt() {
+  public void refreshSearch(String keyword) {
+    this.keyword = keyword;
     this.searchedAt = LocalDateTime.now();
   }
 }

@@ -50,7 +50,7 @@ public class SearchHistoryService {
             .findByUser_IdAndKeyword(userId, normalizedKeyword)
             .map(
                 existing -> {
-                  existing.refreshSearchedAt();
+                  existing.refreshSearch(normalizedKeyword);
                   return existing;
                 })
             .orElseGet(
@@ -92,7 +92,7 @@ public class SearchHistoryService {
       throw new BusinessException(ErrorCode.INVALID_REQUEST);
     }
 
-    String normalized = keyword.trim();
+    String normalized = keyword.strip();
 
     if (normalized.isEmpty() || normalized.length() > MAX_KEYWORD_LENGTH) {
       throw new BusinessException(ErrorCode.INVALID_REQUEST);
