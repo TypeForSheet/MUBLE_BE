@@ -50,7 +50,13 @@ public class UserService {
 
     String normalized = nickname.strip();
 
-    if (normalized.isBlank()) {
+    boolean isOnlyWhitespace =
+        normalized
+            .codePoints()
+            .allMatch(
+                codePoint -> Character.isWhitespace(codePoint) || Character.isSpaceChar(codePoint));
+
+    if (isOnlyWhitespace) {
       throw new BusinessException(ErrorCode.INVALID_REQUEST);
     }
 

@@ -212,4 +212,26 @@ class UserServiceTest {
 
     assertEquals(ErrorCode.USER_NOT_FOUND, exception.getErrorCode());
   }
+
+  @Test
+  void rejectsNonBreakingSpaceOnlyNickname() {
+
+    BusinessException exception =
+        assertThrows(BusinessException.class, () -> userService.updateNickname(1L, "\u00A0\u00A0"));
+
+    assertEquals(ErrorCode.INVALID_REQUEST, exception.getErrorCode());
+
+    verifyNoInteractions(userRepository);
+  }
+
+  @Test
+  void allowsNicknameContainingTextAndNonBreakingSpace() {
+
+    when(userRepository.findById(1L)).thenReturn(Optional.of(user));
+
+    UserProfileResponse response = userService.updateNickname(1L, "Rilla\u00A0");
+
+    assertEquals("Rilla\u00A0", response.nickname());
+    assertEquals("Rilla\u00A0", user.getNickname());
+  }
 }
