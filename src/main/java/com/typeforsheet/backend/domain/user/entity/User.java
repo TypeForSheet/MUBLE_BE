@@ -28,4 +28,8 @@ public class User {
   public User(String nickname) {
     this.nickname = nickname;
   }
+
+  public void updateNickname(String nickname) {
+    this.nickname = nickname;
+  }
 }
